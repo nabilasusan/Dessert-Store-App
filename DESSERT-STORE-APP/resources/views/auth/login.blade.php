@@ -1,47 +1,75 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.auth')
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+@section('title','Login')
+@section('auth_heading','Selamat datang lagi 👋')
+@section('auth_desc','Masuk untuk lanjut kelola dessert kamu.')
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+@section('content')
+  <h2 class="form-title">Masuk</h2>
+  <p class="form-sub">Gunakan email & password yang sudah terdaftar.</p>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+  <form method="POST" action="{{ route('login') }}">
+    @csrf
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Email</label>
+      <input type="email"
+             name="email"
+             value="{{ old('email') }}"
+             class="form-control @error('email') is-invalid @enderror"
+             placeholder="you@example.com"
+             required autofocus>
+      @error('email')
+        <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
+    </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Password</label>
+      <div class="input-group">
+        <input id="passwordInput"
+               type="password"
+               name="password"
+               class="form-control @error('password') is-invalid @enderror"
+               placeholder="••••••••"
+               required>
+        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+      @error('password')
+        <div class="text-danger small mt-1">{{ $message }}</div>
+      @enderror
+    </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="remember" id="remember">
+        <label class="form-check-label" for="remember">Remember me</label>
+      </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+      @if (Route::has('password.request'))
+        <a class="text-decoration-none" href="{{ route('password.request') }}">Lupa password?</a>
+      @endif
+    </div>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    <button type="submit" class="btn btn-primary w-100">
+      <i class="bi bi-box-arrow-in-right me-1"></i> Login
+    </button>
+
+    <div class="text-center mt-3">
+      <span class="text-muted">Belum punya akun?</span>
+      <a class="text-decoration-none fw-semibold" href="{{ route('register') }}">Daftar</a>
+    </div>
+  </form>
+
+  <script>
+    const btn = document.getElementById('togglePassword');
+    const input = document.getElementById('passwordInput');
+    btn?.addEventListener('click', () => {
+      const isPass = input.type === 'password';
+      input.type = isPass ? 'text' : 'password';
+      btn.innerHTML = isPass ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+    });
+  </script>
+@endsection

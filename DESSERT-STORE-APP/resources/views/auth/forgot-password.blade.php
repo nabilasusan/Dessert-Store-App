@@ -1,25 +1,46 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+{{-- resources/views/auth/forgot-password.blade.php --}}
+@extends('layouts.auth')
+
+@section('content')
+<div class="space-y-6">
+  <div>
+    <h2 class="text-2xl font-extrabold tracking-tight text-slate-900">Lupa Password</h2>
+    <p class="text-sm text-slate-600 mt-1">
+      Masukkan email, nanti kami kirim link reset password 🍬
+    </p>
+  </div>
+
+  @if (session('status'))
+    <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800 text-sm">
+      {{ session('status') }}
+    </div>
+  @endif
+
+  @if ($errors->any())
+    <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-800 text-sm">
+      {{ $errors->first() }}
+    </div>
+  @endif
+
+  <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
+    @csrf
+
+    <div>
+      <label class="text-sm font-semibold text-slate-700">Email</label>
+      <input name="email" type="email" value="{{ old('email') }}" required
+        class="mt-1 w-full rounded-xl border-slate-200 focus:border-rose-400 focus:ring-rose-200"
+        placeholder="you@example.com">
     </div>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <button type="submit"
+      class="w-full rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 shadow-sm">
+      Kirim Link Reset
+    </button>
 
-    <form method="POST" action="{{ route('password.email') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    <p class="text-sm text-slate-600 text-center">
+      Ingat password?
+      <a href="{{ route('login') }}" class="font-semibold text-slate-900 hover:text-rose-700">Kembali login</a>
+    </p>
+  </form>
+</div>
+@endsection
