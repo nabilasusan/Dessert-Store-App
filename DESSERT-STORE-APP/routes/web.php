@@ -1,47 +1,52 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DessertController;
 use App\Http\Controllers\FavoriteController;
+use Illuminate\Support\Facades\Auth;
 
-Route::get('/', function () { return redirect()->route('login'); });
+Route::get('/', function () {
+    return view('welcome');
+})->name('welcome');
 
-Route::get('dashboard', function () {
+Route::get('/dashboard', function () {
     $user = Auth::user();
 
-    // user biasa masuk ke halaman home/public desserts
-    // return redirect()->route('home');
-})->middleware(['auth'])->name('dashboard');
-/*
-|--------------------------------------------------------------------------
-| PUBLIC / USER
-|--------------------------------------------------------------------------
-*/
+    // kalau admin -> masuk dashboard admin
+    if ($user && $user->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
 
-// halaman utama list dessert (untuk user)
-Route::get('desert', [DessertController::class, 'publicIndex'])->name('desserts.index');
+    // selain admin -> masuk halaman user (list desserts)
+    return redirect()->route('desserts.index');
+})->middleware('auth')->name('dashboard');
+
+/* =========================
+| USER / PUBLIC
+========================= */
+Route::get('/desserts', [DessertController::class, 'publicIndex'])->name('desserts.index');
 Route::get('/desserts/{dessert:slug}', [DessertController::class, 'publicShow'])->name('desserts.show');
 
-// favorites butuh login
-Route::middleware(['auth'])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::post('/favorites/{dessert}', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 });
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+/* =========================
+| ADMIN (WAJIB LOGIN)
+========================= */
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth', 'admin'])
+    ->group(function () {
 
-    Route::resource('categories', CategoryController::class);
-    Route::resource('desserts', DessertController::class);
-});
+        Route::get('/dashboard', function () {
+            return redirect()->route('admin.desserts.index');
+        })->name('dashboard');
 
-require __DIR__ . '/auth.php';
+        Route::resource('categories', CategoryController::class);
+        Route::resource('desserts', DessertController::class);
+    });
+
+require __DIR__.'/auth.php';

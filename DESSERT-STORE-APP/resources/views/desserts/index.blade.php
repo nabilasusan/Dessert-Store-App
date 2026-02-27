@@ -1,61 +1,122 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+@section('title','Desserts')
 
 @section('content')
-<div class="flex items-start justify-between gap-4 flex-col sm:flex-row">
+<div class="d-flex align-items-center justify-content-between mb-3">
   <div>
-    <h1 class="text-2xl font-extrabold">Daftar Dessert 🍮</h1>
-    <p class="text-sm text-slate-600">Cari dan kelola dessert favorit kamu.</p>
+    <h3 class="fw-bold mb-0">Desserts</h3>
+    <div class="text-muted">Kelola menu dessert (CRUD) untuk aplikasi.</div>
   </div>
 
-  <a href="{{ route('desserts.create') }}"
-     class="px-4 py-2 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700">
-    + Tambah Dessert
+  <a href="{{ route('admin.desserts.create') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-1"></i> Tambah Dessert
   </a>
 </div>
 
-<form class="mt-5 grid sm:grid-cols-3 gap-3">
-  <input name="search" value="{{ request('search') }}" placeholder="Cari dessert..."
-         class="rounded-xl border-slate-200 focus:ring-rose-200 focus:border-rose-400" />
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th style="width:70px;">Foto</th>
+            <th>Nama</th>
+            <th style="width:180px;">Kategori</th>
+            <th style="width:140px;">Harga</th>
+            <th style="width:120px;">Status</th>
+            <th style="width:160px;" class="text-end">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+        @forelse($desserts as $d)
+          <tr>
+            <td>
+              @php
+                $img = $d->image_path ? asset('storage/'.$d->image_path) : 'https://via.placeholder.com/120x90?text=Dessert';
+              @endphp
+              <img src="{{ $img }}" class="thumb" alt="{{ $d->name }}">
+            </td>
 
-  <select name="category" class="rounded-xl border-slate-200 focus:ring-rose-200 focus:border-rose-400">
-    <option value="">Semua kategori</option>
-    @foreach($categories as $c)
-      <option value="{{ $c->slug }}" @selected(request('category')===$c->slug)>{{ $c->name }}</option>
-    @endforeach
-  </select>
+            <td>
+              <div class="fw-semibold">{{ $d->name }}</div>
+              <div class="text-muted small">Slug: {{ $d->slug }}</div>
+            </td>
 
-  <button class="rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-950">
-    Filter
-  </button>
-</form>
+            <td>
+              <span class="badge text-bg-light border">
+                {{ $d->category?->name ?? '-' }}
+              </span>
+            </td>
 
-<div class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-  @forelse($desserts as $d)
-    <a href="{{ route('desserts.show',$d) }}" class="rounded-2xl bg-white/80 border border-white shadow-sm overflow-hidden hover:shadow-md transition">
-      <div class="aspect-[16/10] bg-amber-100">
-        @if($d->image_path)
-          <img src="{{ asset('storage/'.$d->image_path) }}" class="w-full h-full object-cover" />
-        @else
-          <div class="w-full h-full flex items-center justify-center text-slate-600 font-bold">No Image</div>
-        @endif
-      </div>
-      <div class="p-4">
-        <div class="flex items-center justify-between gap-2">
-          <h3 class="font-extrabold text-lg">{{ $d->name }}</h3>
-          @if(!is_null($d->price))
-            <span class="text-sm font-bold text-rose-700">Rp{{ number_format($d->price,0,',','.') }}</span>
-          @endif
-        </div>
-        <p class="text-sm text-slate-600 mt-1">{{ $d->category->name }}</p>
-        <p class="text-sm text-slate-700 mt-2 line-clamp-2">{{ $d->description }}</p>
-      </div>
-    </a>
-  @empty
-    <div class="text-slate-600">Belum ada dessert.</div>
-  @endforelse
-</div>
+            <td class="fw-semibold">
+              @if($d->price !== null)
+                Rp {{ number_format($d->price, 0, ',', '.') }}
+              @else
+                <span class="text-muted">-</span>
+              @endif
+            </td>
 
-<div class="mt-6">
-  {{ $desserts->links() }}
+            <td>
+              @if($d->is_published)
+                <span class="badge text-bg-success"><i class="bi bi-check2 me-1"></i> Publish</span>
+              @else
+                <span class="badge text-bg-secondary"><i class="bi bi-eye-slash me-1"></i> Draft</span>
+              @endif
+            </td>
+
+            <td class="text-end">
+              <a href="{{ route('admin.desserts.edit', $d) }}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-pencil-square"></i>
+              </a>
+
+              <button class="btn btn-outline-danger btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#deleteModal{{ $d->id }}">
+                <i class="bi bi-trash"></i>
+              </button>
+
+              <div class="modal fade" id="deleteModal{{ $d->id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Hapus Dessert</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      Yakin mau hapus <b>{{ $d->name }}</b>?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                      <form method="POST" action="{{ route('admin.desserts.destroy', $d) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-danger">
+                          <i class="bi bi-trash me-1"></i> Hapus
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        @empty
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <div class="fw-semibold">Belum ada dessert</div>
+              <div class="text-muted">Klik tombol <b>Tambah Dessert</b> untuk membuat menu pertama.</div>
+            </td>
+          </tr>
+        @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if($desserts->hasPages())
+    <div class="card-footer bg-white">
+      {{ $desserts->links() }}
+    </div>
+  @endif
 </div>
 @endsection

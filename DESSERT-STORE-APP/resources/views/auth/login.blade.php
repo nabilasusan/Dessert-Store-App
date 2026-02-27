@@ -8,6 +8,10 @@
   <h2 class="form-title">Masuk</h2>
   <p class="form-sub">Gunakan email & password yang sudah terdaftar.</p>
 
+  @if (session('status'))
+    <div class="alert alert-success">{{ session('status') }}</div>
+  @endif
+
   <form method="POST" action="{{ route('login') }}">
     @csrf
 

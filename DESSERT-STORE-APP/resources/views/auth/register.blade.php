@@ -1,59 +1,51 @@
-{{-- resources/views/auth/register.blade.php --}}
 @extends('layouts.auth')
 
+@section('title','Register')
+@section('auth_heading','Buat Akun 🍰')
+@section('auth_desc','Mulai perjalanan manis kamu di Dessert Store.')
+
 @section('content')
-<div class="space-y-6">
-  <div>
-    <h2 class="text-2xl font-extrabold tracking-tight text-slate-900">Buat Akun</h2>
-    <p class="text-sm text-slate-600 mt-1">Mulai perjalanan manis kamu 🍰</p>
-  </div>
+  <h2 class="form-title">Buat Akun</h2>
+  <p class="form-sub">Lengkapi data untuk mendaftar.</p>
 
   @if ($errors->any())
-    <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-800 text-sm">
-      {{ $errors->first() }}
-    </div>
+    <div class="alert alert-danger">{{ $errors->first() }}</div>
   @endif
 
-  <form method="POST" action="{{ route('register') }}" class="space-y-5">
+  <form method="POST" action="{{ route('register') }}">
     @csrf
 
-    <div>
-      <label class="text-sm font-semibold text-slate-700">Nama</label>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Nama</label>
       <input name="name" type="text" value="{{ old('name') }}" required
-        class="mt-1 w-full rounded-xl border-slate-200 focus:border-rose-400 focus:ring-rose-200"
-        placeholder="Nama kamu">
+             class="form-control">
     </div>
 
-    <div>
-      <label class="text-sm font-semibold text-slate-700">Email</label>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Email</label>
       <input name="email" type="email" value="{{ old('email') }}" required
-        class="mt-1 w-full rounded-xl border-slate-200 focus:border-rose-400 focus:ring-rose-200"
-        placeholder="you@example.com">
+             class="form-control">
     </div>
 
-    <div>
-      <label class="text-sm font-semibold text-slate-700">Password</label>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Password</label>
       <input name="password" type="password" required
-        class="mt-1 w-full rounded-xl border-slate-200 focus:border-rose-400 focus:ring-rose-200"
-        placeholder="Minimal 8 karakter">
+             class="form-control">
     </div>
 
-    <div>
-      <label class="text-sm font-semibold text-slate-700">Konfirmasi Password</label>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Konfirmasi Password</label>
       <input name="password_confirmation" type="password" required
-        class="mt-1 w-full rounded-xl border-slate-200 focus:border-rose-400 focus:ring-rose-200"
-        placeholder="Ulangi password">
+             class="form-control">
     </div>
 
-    <button type="submit"
-      class="w-full rounded-xl bg-slate-900 hover:bg-slate-950 text-white font-bold py-3 shadow-sm">
+    <button type="submit" class="btn btn-dark w-100">
       Register
     </button>
 
-    <p class="text-sm text-slate-600 text-center">
-      Sudah punya akun?
-      <a href="{{ route('login') }}" class="font-semibold text-slate-900 hover:text-rose-700">Login</a>
-    </p>
+    <div class="text-center mt-3">
+      <span class="text-muted">Sudah punya akun?</span>
+      <a class="text-decoration-none fw-semibold" href="{{ route('login') }}">Login</a>
+    </div>
   </form>
-</div>
 @endsection
