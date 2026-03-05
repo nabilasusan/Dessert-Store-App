@@ -150,15 +150,14 @@ footer{
   <div class="container">
     <div class="row align-items-center">
 
-      <!-- TEXT -->
       <div class="col-lg-6">
         <h1 class="hero-title mb-4">
-          Nikmati <span>Mochi Premium</span><br>
+          Nikmati <span>Dessert Premium</span><br>
           dengan Rasa Terbaik
         </h1>
 
         <p class="hero-sub mb-4">
-          Jelajahi koleksi dessert mochi lembut dengan cita rasa autentik,
+          Jelajahi koleksi dessert lembut dengan cita rasa autentik,
           dibuat dari bahan berkualitas untuk pengalaman manis yang tak terlupakan.
         </p>
 
@@ -172,7 +171,6 @@ footer{
         </div>
       </div>
 
-      <!-- IMAGE -->
       <div class="col-lg-6 text-center mt-5 mt-lg-0">
         <img 
           src="https://images.unsplash.com/photo-1617196038435-9f60bfae3d9c?auto=format&fit=crop&w=900&q=80"
@@ -185,7 +183,6 @@ footer{
   </div>
 </section>
 
-<!-- FEATURES -->
 <section class="feature-section">
   <div class="container">
     <div class="row g-4">
